@@ -1,0 +1,20 @@
+Interface
+    - Fix scrolling issue
+    - Fix table-header row position
+    - Hide parse button if file is not opened
+    - Hide parse button if already parsed
+    - About: make nice
+    - Show loader while parsing
+    - Change cursor for clickabe lines
+    - New table for SIP flow
+    - Show SIP only messages
+    - Searching with results highlight 
+    - Show warnings\errors only
+    - Advanced filtering
+
+
+Features:
+    - Extract system info
+    - Check if correct file opened
+    - Sphericall dialogs
+    - Errors analizer
