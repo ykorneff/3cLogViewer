@@ -1,11 +1,11 @@
 Interface
     - Fix scrolling issue
     - Fix table-header row position
-    - Hide parse button if file is not opened
-    - Hide parse button if already parsed
+    + Hide parse button if file is not opened
+    + Hide parse button if already parsed
     - About: make nice
     - Show loader while parsing
-    - Change cursor for clickabe lines
+    + Change cursor for clickabe lines
     - New table for SIP flow
     - Show SIP only messages
     - Searching with results highlight 

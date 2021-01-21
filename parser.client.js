@@ -127,7 +127,10 @@ function renderSipDialogs(){
     for(let key of sipDialogs.keys()){
         let id = key;
         addTableRow(id, 'SD', 'sipDialogTab');
-        document.getElementById(id).onclick = function () {
+        let currentRow = document.getElementById(id);
+        currentRow.style.cursor = "pointer"
+        /*document.getElementById(id)*/
+        currentRow.onclick = function () {
             renderFlow(`${id}`);
         }
         addTableData(sdIndex,`${id}_num`,'dialogNum',`${id}`);
@@ -190,11 +193,10 @@ function onOpenFile() {
 function mainMenuDoParseOnClick(){
     console.log('--Parse clicked');
     let loader = document.getElementById("loader");
-    loader.style.display="block";
+    //loader.style.display="block";
     doParse();
     renderLogs();
-    
-
+    document.getElementById("doParse").style.display = "none";
  }
 
  function filterLogsBy() {
@@ -310,6 +312,7 @@ function renderFlow(key) {
     for (let item of selectedDialog) {
         let sipFlowTableLine = document.createElement("TR");
         sipFlowTableLine.id=`glid_${item.id}`;
+        sipFlowTableLine.style.cursor = "pointer";
         //sipFlowTableLine.onclick = "sipFlowTableLineClick(this.getAttribute('id'))";
         sipFlowTableLine.onclick = function() {
             document.getElementById(`log_${item.id}`).scrollIntoView();
