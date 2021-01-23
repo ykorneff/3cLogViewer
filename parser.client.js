@@ -3,6 +3,14 @@ var rawLogs;
 var logFileName;
 var ifFileOpened=false;
 var linedLogs=[];
+var systemInfo = {toString : function() {
+    let res=[];
+    for (let key in this) {
+        res.push(`${key}: ${this[key]}`);
+    }
+    res.shift();
+    return res.join('\n');
+  }};
 
 class LogRecords {
     constructor (id, type, time, level, message, sipMessage) {
@@ -15,7 +23,6 @@ class LogRecords {
     }
 }
 
-const mgcAddress = '10.25.11.10'; //потом надо сделать чтение из файла
 var sipDialogs = new Map();
 
 const sipMethodsRe = /REGISTER|INVITE|ACK|BYE|CANCEL|UPDATE|REFER|PRACK|SUBSCRIBE|NOTIFY|PUBLISH|MESSAGE|INFO|OPTIONS|SIP\/2.0 \d\d\d (.*)/;
@@ -26,6 +33,7 @@ document.getElementById("doParse").style.display="none";
 document.getElementById("logsOutput").style.display="none";
 document.getElementById("showSIPdialogs").style.display="none";
 document.getElementById("sipDialogTab").style.display="none";
+document.getElementById("showSystemInfo").style.display="none";
 
 function sipOnlyFilterOn (){ //работает норма
     let allGeneral = document.getElementsByClassName('GEN');
@@ -37,13 +45,25 @@ function sipOnlyFilterOff(){ //чета криво. после возвраще�
     for (let item of allGeneral) {item.style.display = 'initial';}
 }
 
-function checkIfMgcLogs() {
-    if (rawLogs.match(', MGC, version=') != null) {
-        console.log(`File ${logFileName} is correct MGC log file`);
+function checkIfMgcLogs(raw) {
+    //console.log(raw.split('\n')[0]); 
+    if (raw.match(', MGC, version=') != null) {
+        let line1=raw.split('\n')[0];
+        let line2=raw.split('\n')[1];
+        let l2 = line2.split(' ');
+        systemInfo.host = line1.split(/host=|, ip/)[1];
+        systemInfo.ipAddress = line1.split(/address=|, MGC/)[1];
+        systemInfo.versionMGC = line1.split(/MGC, version=|, built/)[1];
+        systemInfo.versionDB = line1.split(/DB version=|, 3C/)[1];
+        systemInfo.version3C = line1.split(/3C system version=|, log/)[1];
+        systemInfo.logDate = `${l2[2]} ${l2[3]} ${l2[5]}`;
+        console.log(systemInfo);
+        document.getElementById("si").textContent=systemInfo.toString();
+        document.getElementById("si").style.whiteSpace="pre-line";
         return true;
     }
     else {
-        console.log(`File ${logFileName} is not recognized as MGC log file`);
+        //console.log(`File ${logFileName} is not recognized as MGC log file`);
         return false;
     }
 }
@@ -60,22 +80,30 @@ function getOpenFileDialog() {
         logFileName = file.name;
         console.log(`Opened file: ${logFileName}`);
         reader = new FileReader();        
-        reader.onload = () => {rawLogs = reader.result};
+        reader.onload = () => {
+            checkIfMgcLogs(reader.result);
+            rawLogs = reader.result; 
+            //console.log('sgd');
+        };
+        //console.log(checkIfMgcLogs(rawLogs));
         reader.readAsText(file);    
         document.getElementById("openedFileName").textContent = logFileName;
         //ifFileOpened = checkIfMgcLogs(); //Разобраться с проверкой
         //console.log(ifFileOpened);
-        makeVisible("doParse"); 
+        makeVisible("doParse");
+        makeVisible("showSystemInfo") 
     });
     fileInput.click();
-   
+    //checkIfMgcLogs(rawLogs);
 }
 
 function mainMenuBrowseFileOnClick(){
     console.log('--Open gile click');
     console.log('Get open file dialog');
     getOpenFileDialog();
-
+    //console.log(rawLogs);
+    
+    //checkIfMgcLogs(rawLogs);
 }
 
 function makeVisible(itemId){
@@ -192,7 +220,8 @@ function onOpenFile() {
 
 function mainMenuDoParseOnClick(){
     console.log('--Parse clicked');
-    let loader = document.getElementById("loader");
+    console.log(rawLogs);
+    //let loader = document.getElementById("loader");
     //loader.style.display="block";
     doParse();
     renderLogs();
@@ -302,7 +331,7 @@ function renderFlow(key) {
     let sipFlowTableHeader = document.createElement("TR");
     sipFlowTable.appendChild(sipFlowTableHeader);
     let mgcCell = document.createElement("TH");
-    mgcCell.textContent = `MGC: ${mgcAddress}`;
+    mgcCell.textContent = `MGC: ${systemInfo.ipAddress}`;
     let messageCell = document.createElement('TH');
     messageCell.textContent = 'Message';
     sipFlowTableHeader.appendChild(mgcCell);
