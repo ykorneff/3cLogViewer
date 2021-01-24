@@ -2,6 +2,7 @@
 var rawLogs;
 var logFileName;
 var ifFileOpened=false;
+var ifCorrect = true;
 var linedLogs=[];
 var systemInfo = {toString : function() {
     let res=[];
@@ -81,8 +82,19 @@ function getOpenFileDialog() {
         console.log(`Opened file: ${logFileName}`);
         reader = new FileReader();        
         reader.onload = () => {
-            checkIfMgcLogs(reader.result);
-            rawLogs = reader.result; 
+            //let check = checkIfMgcLogs(reader.result);
+            //console.log(`Correct MGC log file = ${check}`);
+            if (!checkIfMgcLogs(reader.result)) {
+                alert('Wrong file format');
+                console.log(`Wrong MGC log file format`);
+                ifCorrect = false;
+            } else {
+                rawLogs = reader.result;
+                console.log(`Correct MGC log file. Ready for parsing.`)
+                makeVisible("doParse");
+                makeVisible("showSystemInfo") ; 
+            }
+            
             //console.log('sgd');
         };
         //console.log(checkIfMgcLogs(rawLogs));
@@ -90,8 +102,7 @@ function getOpenFileDialog() {
         document.getElementById("openedFileName").textContent = logFileName;
         //ifFileOpened = checkIfMgcLogs(); //Разобраться с проверкой
         //console.log(ifFileOpened);
-        makeVisible("doParse");
-        makeVisible("showSystemInfo") 
+
     });
     fileInput.click();
     //checkIfMgcLogs(rawLogs);

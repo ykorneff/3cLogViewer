@@ -14,7 +14,7 @@ Interface
 
 
 Features:
-    - Extract system info
-    - Check if correct file opened
+    + Extract system info
+    + Check if correct file opened
     - Sphericall dialogs
     - Errors analizer
