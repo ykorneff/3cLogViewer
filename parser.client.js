@@ -36,16 +36,6 @@ document.getElementById("showSIPdialogs").style.display="none";
 document.getElementById("sipDialogTab").style.display="none";
 document.getElementById("showSystemInfo").style.display="none";
 
-function sipOnlyFilterOn (){ //работает норма
-    let allGeneral = document.getElementsByClassName('GEN');
-    for (let item of allGeneral) {item.style.display = 'none';}
-}
-
-function sipOnlyFilterOff(){ //чета криво. после возвращения уезжает форматирование
-    let allGeneral = document.getElementsByClassName('GEN');
-    for (let item of allGeneral) {item.style.display = 'initial';}
-}
-
 function checkIfMgcLogs(raw) {
     //console.log(raw.split('\n')[0]); 
     if (raw.match(', MGC, version=') != null) {
@@ -70,6 +60,12 @@ function checkIfMgcLogs(raw) {
 }
 
 function getOpenFileDialog() {
+    if (ifFileOpened){
+        makeInvisible("showSIPdialogs");
+        makeInvisible("doParse");
+        
+        document.getElementById('sipFlowTable').remove();
+    }
     console.log('--OpenFile');
     let element = document.createElement('div');
     element.innerHTML = '<input type="file">';
@@ -90,6 +86,7 @@ function getOpenFileDialog() {
                 ifCorrect = false;
             } else {
                 rawLogs = reader.result;
+                ifFileOpened=true;
                 console.log(`Correct MGC log file. Ready for parsing.`)
                 makeVisible("doParse");
                 makeVisible("showSystemInfo") ; 
@@ -122,6 +119,10 @@ function makeVisible(itemId){
 
 }
 
+function makeInvisible(itemId){
+    document.getElementById(itemId).style.display = "none";
+}
+
 function addTableData(text, id, klass, parent) {
     let item = document.createElement("TD");
     item.id = parent+id;
@@ -144,17 +145,15 @@ function renderLogs(){
     for (let record of logRecordArray) {
         let id = record.id;
         let parentId = `log_${id}`;
-        //addTableData(record.message,record.id,'cNum',')
         addTableRow(parentId,record.type,'logsOutput');
         addTableData(id,`${parentId}_num`,'cNum',`${parentId}`);
-//        addTableData(record.type,`${parentId}_type`,'cType',`${parentId}`);
         addTableData(record.time,`${parentId}_time`,'cTime',`${parentId}`);
         addTableData(record.level,`${parentId}_level`,'cLevel',`${parentId}`);
-        //let textContent = record.message;
         let textContent=`${record.message}${record.sipMessage}`.replace(/(\r\n)\1+/g,"$1");
         addTableData(textContent,`${parentId}_msg`,'cMessage',`${parentId}`);
 
     }
+    console.log('--End of rendering logs');
     document.getElementById("logsOutput").style.display="initial";
     document.getElementById("showSIPdialogs").style.display="initial";
     //document.getElementById("loader").style.display="none";
@@ -211,7 +210,7 @@ function doParse(){
             //logRecord.sipMessage ='';
             if ((parsedLine[1]=='L2') &(line.match(/ tx sip=| rx sip=/)!=null)) {
             //if ((parsedLine[1]=='L2') & (line.includes(/ tx sip=| rx sip=/))) {
-                console.log('Match SIP');
+                //console.log('Match SIP');
                 logRecord.type='SIP';
             }
             counter++;
@@ -222,7 +221,7 @@ function doParse(){
             logRecord.sipMessage.replace(/(\n)\1+/g,"$1");
         }
     }
-    
+    console.log('--End of parsing');
 }
 
 function onOpenFile() {
@@ -231,7 +230,7 @@ function onOpenFile() {
 
 function mainMenuDoParseOnClick(){
     console.log('--Parse clicked');
-    console.log(rawLogs);
+    //console.log(rawLogs);
     //let loader = document.getElementById("loader");
     //loader.style.display="block";
     doParse();
