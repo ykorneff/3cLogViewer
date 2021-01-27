@@ -11,7 +11,8 @@ Interface
     - Searching with results highlight 
     p Show warnings\errors only
     p Advanced filtering
-    - open new file
+    + open new file
+    p multiple SIP dialogs chose 
 
 
 Features:

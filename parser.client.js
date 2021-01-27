@@ -4,6 +4,7 @@ var logFileName;
 var ifFileOpened=false;
 var ifCorrect = true;
 var linedLogs=[];
+
 var systemInfo = {toString : function() {
     let res=[];
     for (let key in this) {
@@ -26,6 +27,7 @@ class LogRecords {
 
 var sipDialogs = new Map();
 
+
 const sipMethodsRe = /REGISTER|INVITE|ACK|BYE|CANCEL|UPDATE|REFER|PRACK|SUBSCRIBE|NOTIFY|PUBLISH|MESSAGE|INFO|OPTIONS|SIP\/2.0 \d\d\d (.*)/;
 
 var logRecordArray=[];
@@ -35,6 +37,18 @@ document.getElementById("logsOutput").style.display="none";
 document.getElementById("showSIPdialogs").style.display="none";
 document.getElementById("sipDialogTab").style.display="none";
 document.getElementById("showSystemInfo").style.display="none";
+
+function addElement(tag, parent, ...params){
+    //console.log(tag);
+    //console.log(parent);
+    //console.log(params);
+    let item = document.createElement(tag);
+    for (let i = 0; i<params.length-1; i+=2) {
+        console.log(`${params[i]}: ${params[i+1]}`);
+        item[params[i]]=params[i+1];
+    }
+    document.getElementById(parent).appendChild(item);
+}
 
 function checkIfMgcLogs(raw) {
     //console.log(raw.split('\n')[0]); 
@@ -59,12 +73,58 @@ function checkIfMgcLogs(raw) {
     }
 }
 
+
+function destroyElement(elem) {
+    while (elem.firstChild) {
+        elem.removeChild(elem.firstChild);
+    }
+    elem.remove();
+}
 function getOpenFileDialog() {
     if (ifFileOpened){
+        logRecordArray = [];
+        rawLogs = ''
+        sipMessagesArray = [];
+        sipDialogs = new Map();
+        //localStorage.setItem('ifNextOpen', true);
+        //window.location.reload(); //идея нелоха но надо кликать второй раз чтоб открыть файл.
+        
         makeInvisible("showSIPdialogs");
         makeInvisible("doParse");
-        
+
+        //сначала удаляем все нахер:
+        //destroyElement(document.getElementById('logsOutput'));
+        //document.getElementById('logsOutput').innerHTML = "";
+        document.getElementById('logsOutput').remove();
+        document.getElementById('sipDialogTab').remove();
         document.getElementById('sipFlowTable').remove();
+
+        rawLogs = ''; 
+        linedLogs = [];
+        
+        ifFileOpened = false; // и сбрасываем флаг
+
+        
+        //а теперь надо руками отрисовать таблицы взад и спрятать:
+        addElement('table', 'allLogRecords', 'id', 'logsOutput', 'style.width', '100%');
+        addElement('tr', 'logsOutput', 'id', 'logsOutHeader');
+        addElement('th', 'logsOutHeader', 'class', 'cNum','textContent', '#');
+        addElement('th', 'logsOutHeader', 'class', 'cTime','textContent', 'TIME');
+        addElement('th', 'logsOutHeader', 'class', 'cLevel','textContent', 'LEVEL', 'style.width', '45px');
+        addElement('th', 'logsOutHeader', 'class', 'cMessage','textContent', 'MESSAGE');
+        makeInvisible('logsOutput');
+
+        addElement('table', 'sipDialogs', 'id', 'sipDialogTab');
+        addElement('tr', 'sipDialogTab', 'id', 'sipDialogsHeader');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogNum','textContent', '#');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogTime','textContent', 'Time');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogSipCallId','textContent', 'SIP Call-ID');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogMethod','textContent', 'Method');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogFrom','textContent', 'From');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogTo','textContent', 'To');
+        makeInvisible('sipDialogTab');
+        
+
     }
     console.log('--OpenFile');
     let element = document.createElement('div');
