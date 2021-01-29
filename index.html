@@ -4,6 +4,7 @@
         <title>3C logs parser</title>
         <link rel="stylesheet" href="./css/app.css" type="text/css"/>
         <link rel="stylesheet" href="./css/modal.css" type="text/css">
+        <link rel="icon" href="favicon.png" sizes="512x512" type="image/png">
         <script async src="./modal.js"></script>
         <script async src="./parser.client.js"></script>
     </head>
@@ -16,6 +17,8 @@
                 <li id="showSIPdialogs"><a href="javascript:void(0)" onclick="mainMenuShowSipDialog()">Show SIP</a></li>
                 <li id="showSystemInfo"><a href="javascript:void(0)">System info</a></li>
                 <li id="showAbout"><a href="javascript:void(0)">About</a></li>
+                <label for="searchString">Search: </label><input type="text", id = "searchString">
+                <li id="startSearchBtn"><a href="javascript:void(0)" onclick="startSearch()">&#x25B6;</a></li>
             </ul>
         </nav>
         <section id="logOut" class="row">

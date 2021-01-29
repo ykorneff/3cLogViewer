@@ -95,10 +95,15 @@ function getOpenFileDialog() {
         //сначала удаляем все нахер:
         //destroyElement(document.getElementById('logsOutput'));
         //document.getElementById('logsOutput').innerHTML = "";
-        document.getElementById('logsOutput').remove();
-        document.getElementById('sipDialogTab').remove();
-        document.getElementById('sipFlowTable').remove();
-
+        try {
+            document.getElementById('logsOutput').remove();
+            document.getElementById('sipDialogTab').remove();
+            document.getElementById('sipFlowTable').remove();
+        }
+        catch (error) {
+            console.log(error);
+        }
+        
         rawLogs = ''; 
         linedLogs = [];
         
@@ -452,4 +457,29 @@ function renderFlow(key) {
 function sipFlowTableLineClick(id) {
     console.log('##SIP flow line clicked');
     document.getElementById(`log_${id}`).scrollIntoView();
+}
+
+function startSearch(){
+    let searchLine = document.getElementById('searchString').value;
+    console.log(`--Searching for ${searchLine}`);
+    for (let item of logRecordArray) {
+        let searchResult = item.message.match(searchLine);
+        if (searchResult!=null){
+            //console.log(item.id, searchResult);
+            let line = document.getElementById(`log_${item.id}log_${item.id}_msg`);
+            console.log(item.id, line.textContent);
+            //line.textContent='';
+            let markedText='';
+            
+            let pieces = item.message.split(searchLine);
+            /*
+            for (let i = 0 ; i <pieces.length;) {
+                markedText += `${pieces[i]}<mark>${searchLine}</mark>`;
+                console.log(markedText);
+            }
+            markedText+=searchLine;*/
+            markedText=`${pieces[0]}<mark>${searchLine}</mark>${pieces[1]}`;
+            line.innerHTML=markedText;
+        }
+    }
 }
