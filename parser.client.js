@@ -25,6 +25,8 @@ class LogRecords {
     }
 }
 
+
+var markers = new Map();
 var sipDialogs = new Map();
 
 
@@ -481,5 +483,42 @@ function startSearch(){
             markedText=`${pieces[0]}<mark>${searchLine}</mark>${pieces[1]}`;
             line.innerHTML=markedText;
         }
+    }
+}
+
+function clearMark(style) {
+    let searchLine = markers.get(style);
+    console.log(searchLine);
+    if (markers.has(style)){
+        console.log(`--Marker tool's cleaning style: ${style} for ${searchLine}`);
+        let lookFor = new RegExp(`<mark class=\"${style}\">${searchLine}</mark>`, 'g');
+      
+        for (let line of document.getElementsByClassName("cMessage")) {
+            let original = line.innerHTML;
+            let unMarkedText = original.replaceAll(lookFor, searchLine);
+            line.innerHTML = unMarkedText;
+        }   
+        return true;     
+    } else {
+        return false;
+    }
+}
+
+function doMark(searchLine, style) {
+    //check if marker already used - then clear;
+    if (markers.has(style)){
+        clearMark(style);
+    }
+
+    console.log(`--Marker tool's starting with style: ${style} for ${searchLine}`);
+
+    markers.set(style,searchLine);
+    let lookFor = new RegExp(searchLine, 'g');
+    let replaceWith = `<mark class=\"${style}\">${searchLine}</mark>`;
+    for (let line of document.getElementsByClassName("cMessage")) {
+
+        let original = line.innerHTML;
+        let markedText = original.replace(lookFor, replaceWith);
+        line.innerHTML = markedText;
     }
 }

@@ -17,8 +17,17 @@
                 <li id="showSIPdialogs"><a href="javascript:void(0)" onclick="mainMenuShowSipDialog()">Show SIP</a></li>
                 <li id="showSystemInfo"><a href="javascript:void(0)">System info</a></li>
                 <li id="showAbout"><a href="javascript:void(0)">About</a></li>
-                <label for="searchString">Search: </label><input type="text", id = "searchString">
-                <li id="startSearchBtn"><a href="javascript:void(0)" onclick="startSearch()">&#x25B6;</a></li>
+                <label for="search1">Marker 1: </label><input class="markerOrange" type="text", id = "search1">
+                <li id="startSearchBtn1"><a href="javascript:void(0)" onclick="doMark(document.getElementById('search1').value, 'markerOrange')">&#x25B6;</a></li>
+                <label for="search2">Marker 2: </label><input class="markerBlue" type="text", id = "search2">
+                <li id="startSearchBtn2"><a href="javascript:void(0)" onclick="doMark(document.getElementById('search2').value, 'markerBlue')">&#x25B6;</a></li>
+                <label for="search3">Marker 3: </label><input class="markerViolet" type="text", id = "search3">
+                <li id="startSearchBtn3"><a href="javascript:void(0)" onclick="doMark(document.getElementById('search3').value, 'markerViolet')">&#x25B6;</a></li>
+                <label for="search4">Marker 4: </label><input class="markerTeal" type="text", id = "search4">
+                <li id="startSearchBtn4"><a href="javascript:void(0)" onclick="doMark(document.getElementById('search4').value, 'markerTeal')">&#x25B6;</a></li>
+                <label for="search5">Marker 5: </label><input class="markerOlive"type="text", id = "search5">
+                <li id="startSearchBtn5"><a href="javascript:void(0)" onclick="doMark(document.getElementById('search5').value, 'markerOlive')">&#x25B6;</a></li>
+
             </ul>
         </nav>
         <section id="logOut" class="row">

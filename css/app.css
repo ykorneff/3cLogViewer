@@ -197,6 +197,37 @@ tr:nth-child(odd){
     white-space: pre-line;
 }
 
+.markerOrange{
+    background-color:darkorange;
+}
+
+.markerBlue{
+    background-color:dodgerblue;
+}
+
+.markerViolet{
+    background-color:violet;
+}
+
+.markerTeal{
+    background-color:teal;
+}
+
+.markerOlive{
+    background-color:olive;
+}
+
+.warning{
+    background-color: yellow;
+}
+
+.error{
+    background-color: red;
+}
+
+input[type=text]{
+    width: 60px;
+}
 footer {
     position: fixed;
     margin: 0;
