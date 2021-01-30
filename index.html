@@ -14,7 +14,6 @@
             <ul id="mainMenu">
                 <li id="mmFileOpen"><a href="javascript:void(0)" onclick="mainMenuBrowseFileOnClick()">Open file</a></li>
                 <li id="doParse"><a href="javascript:void(0)" onclick="mainMenuDoParseOnClick()">Parse logs</a></li>
-                <li id="showSIPdialogs"><a href="javascript:void(0)" onclick="mainMenuShowSipDialog()">Show SIP</a></li>
                 <li id="showSystemInfo"><a href="javascript:void(0)">System info</a></li>
                 <li id="showAbout"><a href="javascript:void(0)">About</a></li>
                 <label for="search1">Marker 1: </label><input class="markerOrange" type="text", id = "search1">
@@ -27,7 +26,7 @@
                 <li id="startSearchBtn4"><a href="javascript:void(0)" onclick="doMark(document.getElementById('search4').value, 'markerTeal')">&#x25B6;</a></li>
                 <label for="search5">Marker 5: </label><input class="markerOlive"type="text", id = "search5">
                 <li id="startSearchBtn5"><a href="javascript:void(0)" onclick="doMark(document.getElementById('search5').value, 'markerOlive')">&#x25B6;</a></li>
-
+                <li id="clearAll"><a href="javascript:void(0)" onclick="doClearAllMarkers()">Clear all</a></li>
             </ul>
         </nav>
         <section id="logOut" class="row">

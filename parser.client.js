@@ -522,3 +522,12 @@ function doMark(searchLine, style) {
         line.innerHTML = markedText;
     }
 }
+
+function doClearAllMarkers() {
+    for(let item of document.getElementsByTagName('input')){
+        item.value='';
+    }
+    for (let key of markers.keys()) {
+        clearMark(key);
+    }
+}
