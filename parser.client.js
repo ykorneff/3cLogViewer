@@ -2,7 +2,17 @@
 var rawLogs;
 var logFileName;
 var ifFileOpened=false;
+var ifCorrect = true;
 var linedLogs=[];
+
+var systemInfo = {toString : function() {
+    let res=[];
+    for (let key in this) {
+        res.push(`${key}: ${this[key]}`);
+    }
+    res.shift();
+    return res.join('\n');
+  }};
 
 class LogRecords {
     constructor (id, type, time, level, message, sipMessage) {
@@ -15,8 +25,10 @@ class LogRecords {
     }
 }
 
-const mgcAddress = '10.25.11.10'; //потом надо сделать чтение из файла
+
+var markers = new Map();
 var sipDialogs = new Map();
+
 
 const sipMethodsRe = /REGISTER|INVITE|ACK|BYE|CANCEL|UPDATE|REFER|PRACK|SUBSCRIBE|NOTIFY|PUBLISH|MESSAGE|INFO|OPTIONS|SIP\/2.0 \d\d\d (.*)/;
 
@@ -26,29 +38,101 @@ document.getElementById("doParse").style.display="none";
 document.getElementById("logsOutput").style.display="none";
 document.getElementById("showSIPdialogs").style.display="none";
 document.getElementById("sipDialogTab").style.display="none";
+document.getElementById("showSystemInfo").style.display="none";
 
-function sipOnlyFilterOn (){ //работает норма
-    let allGeneral = document.getElementsByClassName('GEN');
-    for (let item of allGeneral) {item.style.display = 'none';}
+function addElement(tag, parent, ...params){
+    //console.log(tag);
+    //console.log(parent);
+    //console.log(params);
+    let item = document.createElement(tag);
+    for (let i = 0; i<params.length-1; i+=2) {
+        console.log(`${params[i]}: ${params[i+1]}`);
+        item[params[i]]=params[i+1];
+    }
+    document.getElementById(parent).appendChild(item);
 }
 
-function sipOnlyFilterOff(){ //чета криво. после возвращения уезжает форматирование
-    let allGeneral = document.getElementsByClassName('GEN');
-    for (let item of allGeneral) {item.style.display = 'initial';}
-}
-
-function checkIfMgcLogs() {
-    if (rawLogs.match(', MGC, version=') != null) {
-        console.log(`File ${logFileName} is correct MGC log file`);
+function checkIfMgcLogs(raw) {
+    //console.log(raw.split('\n')[0]); 
+    if (raw.match(', MGC, version=') != null) {
+        let line1=raw.split('\n')[0];
+        let line2=raw.split('\n')[1];
+        let l2 = line2.split(' ');
+        systemInfo.host = line1.split(/host=|, ip/)[1];
+        systemInfo.ipAddress = line1.split(/address=|, MGC/)[1];
+        systemInfo.versionMGC = line1.split(/MGC, version=|, built/)[1];
+        systemInfo.versionDB = line1.split(/DB version=|, 3C/)[1];
+        systemInfo.version3C = line1.split(/3C system version=|, log/)[1];
+        systemInfo.logDate = `${l2[2]} ${l2[3]} ${l2[5]}`;
+        console.log(systemInfo);
+        document.getElementById("si").textContent=systemInfo.toString();
+        document.getElementById("si").style.whiteSpace="pre-line";
         return true;
     }
     else {
-        console.log(`File ${logFileName} is not recognized as MGC log file`);
+        //console.log(`File ${logFileName} is not recognized as MGC log file`);
         return false;
     }
 }
 
+
+function destroyElement(elem) {
+    while (elem.firstChild) {
+        elem.removeChild(elem.firstChild);
+    }
+    elem.remove();
+}
 function getOpenFileDialog() {
+    if (ifFileOpened){
+        logRecordArray = [];
+        rawLogs = ''
+        sipMessagesArray = [];
+        sipDialogs = new Map();
+        //localStorage.setItem('ifNextOpen', true);
+        //window.location.reload(); //идея нелоха но надо кликать второй раз чтоб открыть файл.
+        
+        makeInvisible("showSIPdialogs");
+        makeInvisible("doParse");
+
+        //сначала удаляем все нахер:
+        //destroyElement(document.getElementById('logsOutput'));
+        //document.getElementById('logsOutput').innerHTML = "";
+        try {
+            document.getElementById('logsOutput').remove();
+            document.getElementById('sipDialogTab').remove();
+            document.getElementById('sipFlowTable').remove();
+        }
+        catch (error) {
+            console.log(error);
+        }
+        
+        rawLogs = ''; 
+        linedLogs = [];
+        
+        ifFileOpened = false; // и сбрасываем флаг
+
+        
+        //а теперь надо руками отрисовать таблицы взад и спрятать:
+        addElement('table', 'allLogRecords', 'id', 'logsOutput', 'style.width', '100%');
+        addElement('tr', 'logsOutput', 'id', 'logsOutHeader');
+        addElement('th', 'logsOutHeader', 'class', 'cNum','textContent', '#');
+        addElement('th', 'logsOutHeader', 'class', 'cTime','textContent', 'TIME');
+        addElement('th', 'logsOutHeader', 'class', 'cLevel','textContent', 'LEVEL', 'style.width', '45px');
+        addElement('th', 'logsOutHeader', 'class', 'cMessage','textContent', 'MESSAGE');
+        makeInvisible('logsOutput');
+
+        addElement('table', 'sipDialogs', 'id', 'sipDialogTab');
+        addElement('tr', 'sipDialogTab', 'id', 'sipDialogsHeader');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogNum','textContent', '#');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogTime','textContent', 'Time');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogSipCallId','textContent', 'SIP Call-ID');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogMethod','textContent', 'Method');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogFrom','textContent', 'From');
+        addElement('th', 'sipDialogsHeader', 'class', 'dialogTo','textContent', 'To');
+        makeInvisible('sipDialogTab');
+        
+
+    }
     console.log('--OpenFile');
     let element = document.createElement('div');
     element.innerHTML = '<input type="file">';
@@ -60,27 +144,50 @@ function getOpenFileDialog() {
         logFileName = file.name;
         console.log(`Opened file: ${logFileName}`);
         reader = new FileReader();        
-        reader.onload = () => {rawLogs = reader.result};
+        reader.onload = () => {
+            //let check = checkIfMgcLogs(reader.result);
+            //console.log(`Correct MGC log file = ${check}`);
+            if (!checkIfMgcLogs(reader.result)) {
+                alert('Wrong file format');
+                console.log(`Wrong MGC log file format`);
+                ifCorrect = false;
+            } else {
+                rawLogs = reader.result;
+                ifFileOpened=true;
+                console.log(`Correct MGC log file. Ready for parsing.`)
+                makeVisible("doParse");
+                makeVisible("showSystemInfo") ; 
+            }
+            
+            //console.log('sgd');
+        };
+        //console.log(checkIfMgcLogs(rawLogs));
         reader.readAsText(file);    
         document.getElementById("openedFileName").textContent = logFileName;
         //ifFileOpened = checkIfMgcLogs(); //Разобраться с проверкой
         //console.log(ifFileOpened);
-        makeVisible("doParse"); 
+
     });
     fileInput.click();
-   
+    //checkIfMgcLogs(rawLogs);
 }
 
 function mainMenuBrowseFileOnClick(){
     console.log('--Open gile click');
     console.log('Get open file dialog');
     getOpenFileDialog();
-
+    //console.log(rawLogs);
+    
+    //checkIfMgcLogs(rawLogs);
 }
 
 function makeVisible(itemId){
     document.getElementById(itemId).style.display = "initial";
 
+}
+
+function makeInvisible(itemId){
+    document.getElementById(itemId).style.display = "none";
 }
 
 function addTableData(text, id, klass, parent) {
@@ -105,17 +212,15 @@ function renderLogs(){
     for (let record of logRecordArray) {
         let id = record.id;
         let parentId = `log_${id}`;
-        //addTableData(record.message,record.id,'cNum',')
         addTableRow(parentId,record.type,'logsOutput');
         addTableData(id,`${parentId}_num`,'cNum',`${parentId}`);
-//        addTableData(record.type,`${parentId}_type`,'cType',`${parentId}`);
         addTableData(record.time,`${parentId}_time`,'cTime',`${parentId}`);
         addTableData(record.level,`${parentId}_level`,'cLevel',`${parentId}`);
-        //let textContent = record.message;
         let textContent=`${record.message}${record.sipMessage}`.replace(/(\r\n)\1+/g,"$1");
         addTableData(textContent,`${parentId}_msg`,'cMessage',`${parentId}`);
 
     }
+    console.log('--End of rendering logs');
     document.getElementById("logsOutput").style.display="initial";
     document.getElementById("showSIPdialogs").style.display="initial";
     //document.getElementById("loader").style.display="none";
@@ -172,7 +277,7 @@ function doParse(){
             //logRecord.sipMessage ='';
             if ((parsedLine[1]=='L2') &(line.match(/ tx sip=| rx sip=/)!=null)) {
             //if ((parsedLine[1]=='L2') & (line.includes(/ tx sip=| rx sip=/))) {
-                console.log('Match SIP');
+                //console.log('Match SIP');
                 logRecord.type='SIP';
             }
             counter++;
@@ -183,7 +288,7 @@ function doParse(){
             logRecord.sipMessage.replace(/(\n)\1+/g,"$1");
         }
     }
-    
+    console.log('--End of parsing');
 }
 
 function onOpenFile() {
@@ -192,7 +297,8 @@ function onOpenFile() {
 
 function mainMenuDoParseOnClick(){
     console.log('--Parse clicked');
-    let loader = document.getElementById("loader");
+    //console.log(rawLogs);
+    //let loader = document.getElementById("loader");
     //loader.style.display="block";
     doParse();
     renderLogs();
@@ -302,7 +408,7 @@ function renderFlow(key) {
     let sipFlowTableHeader = document.createElement("TR");
     sipFlowTable.appendChild(sipFlowTableHeader);
     let mgcCell = document.createElement("TH");
-    mgcCell.textContent = `MGC: ${mgcAddress}`;
+    mgcCell.textContent = `MGC: ${systemInfo.ipAddress}`;
     let messageCell = document.createElement('TH');
     messageCell.textContent = 'Message';
     sipFlowTableHeader.appendChild(mgcCell);
@@ -353,4 +459,75 @@ function renderFlow(key) {
 function sipFlowTableLineClick(id) {
     console.log('##SIP flow line clicked');
     document.getElementById(`log_${id}`).scrollIntoView();
+}
+
+function startSearch(){
+    let searchLine = document.getElementById('searchString').value;
+    console.log(`--Searching for ${searchLine}`);
+    for (let item of logRecordArray) {
+        let searchResult = item.message.match(searchLine);
+        if (searchResult!=null){
+            //console.log(item.id, searchResult);
+            let line = document.getElementById(`log_${item.id}log_${item.id}_msg`);
+            console.log(item.id, line.textContent);
+            //line.textContent='';
+            let markedText='';
+            
+            let pieces = item.message.split(searchLine);
+            /*
+            for (let i = 0 ; i <pieces.length;) {
+                markedText += `${pieces[i]}<mark>${searchLine}</mark>`;
+                console.log(markedText);
+            }
+            markedText+=searchLine;*/
+            markedText=`${pieces[0]}<mark>${searchLine}</mark>${pieces[1]}`;
+            line.innerHTML=markedText;
+        }
+    }
+}
+
+function clearMark(style) {
+    let searchLine = markers.get(style);
+    console.log(searchLine);
+    if (markers.has(style)){
+        console.log(`--Marker tool's cleaning style: ${style} for ${searchLine}`);
+        let lookFor = new RegExp(`<mark class=\"${style}\">${searchLine}</mark>`, 'g');
+      
+        for (let line of document.getElementsByClassName("cMessage")) {
+            let original = line.innerHTML;
+            let unMarkedText = original.replaceAll(lookFor, searchLine);
+            line.innerHTML = unMarkedText;
+        }   
+        return true;     
+    } else {
+        return false;
+    }
+}
+
+function doMark(searchLine, style) {
+    //check if marker already used - then clear;
+    if (markers.has(style)){
+        clearMark(style);
+    }
+
+    console.log(`--Marker tool's starting with style: ${style} for ${searchLine}`);
+
+    markers.set(style,searchLine);
+    let lookFor = new RegExp(searchLine, 'g');
+    let replaceWith = `<mark class=\"${style}\">${searchLine}</mark>`;
+    for (let line of document.getElementsByClassName("cMessage")) {
+
+        let original = line.innerHTML;
+        let markedText = original.replace(lookFor, replaceWith);
+        line.innerHTML = markedText;
+    }
+}
+
+function doClearAllMarkers() {
+    for(let item of document.getElementsByTagName('input')){
+        item.value='';
+    }
+    for (let key of markers.keys()) {
+        clearMark(key);
+    }
 }
