@@ -1,0 +1,50 @@
+﻿host=ucm0, ip address=10.25.11.10, MGC, version=10.0.0.591, built with DB version=10.0.157.459, 3C system version=10.0.0.7, log file #1,
+Opened Fri Jan 15 18:15:18 2021 W. Europe Standard Time, MGC first logged at Fri Jan 15 18:15:18 2021
+18:15:18.412, L4, 17554, Log Message Server.3, ctor, count=3
+
+18:15:38.203, L2, 17e64, Registration.602, 7011@lab1025.net, Contact Header domain=10.25.11.10, source=MGC IP
+18:15:38.203, L3, 17e64, UserAgent.28, name match "NECSDT900_ITK-32LCGS" matches UserAgent "NECSDT900_ITK-32LCGS"
+18:15:38.203, L3, 17e64, OptionsClientTU.682, getAutoSwitchToTcp true (from m_registration)
+18:15:38.203, L4, 17e64, NonInviteClientTransaction.684, ctor, count=622
+18:15:38.203, L3, 17e64, NonInviteClientTransaction.684, sending request, tx sip=OPTIONS sip:7011@10.25.11.59:5060 SIP/2.0
+Via: SIP/2.0/UDP 10.25.11.10:5060;branch=z9hG4bK52b28aae-1fbb-43cf-9cff61fe3dce8dd7
+From: <sip:Sphericall@lab1025.net>;tag=5d196caa-4952-4231-84bda96af0f2ba03
+To: "Adam Red" <sip:7011@lab1025.net>
+Contact: <sip:10.25.11.10;transport=udp>
+Supported: presence,replaces,resource-priority
+User-Agent: Sphericall/10.0.0 Build/591
+Max-Forwards: 70
+Call-ID: 8a2ac096-8245-4b25-9919ba3f0adcb475@10.25.11.10
+Content-Length: 0
+
+
+18:15:38.203, L3, 17e64, SIPTransceiver.609, client udp::10.25.11.59:5060, 0, SIPInstanceId=not exist
+18:15:38.203, L2, 17e64, SIPTransportLayer.608, send request, method=OPTIONS, dest=10.25.11.59:5060, 0
+18:15:38.203, L3, 17760, UDPtransceiver.610, -> udp::0,10.25.11.59:5060 tx sip=OPTIONS sip:7011@10.25.11.59:5060 SIP/2.0
+Via: SIP/2.0/UDP 10.25.11.10:5060;branch=z9hG4bK52b28aae-1fbb-43cf-9cff61fe3dce8dd7
+From: <sip:Sphericall@lab1025.net>;tag=5d196caa-4952-4231-84bda96af0f2ba03
+To: "Adam Red" <sip:7011@lab1025.net>
+Contact: <sip:10.25.11.10;transport=udp>
+Supported: presence,replaces,resource-priority
+User-Agent: Sphericall/10.0.0 Build/591
+Max-Forwards: 70
+Call-ID: 8a2ac096-8245-4b25-9919ba3f0adcb475@10.25.11.10
+Content-Length: 0
+CSeq: 1 OPTIONS
+
+
+18:15:38.224, L3, 17e64, SIPstack.81, <-10.25.11.59:40120, rx_count=458 (458), rx sip=SIP/2.0 200 OK
+Via: SIP/2.0/UDP 10.25.11.10:5060;branch=z9hG4bK52b28aae-1fbb-43cf-9cff61fe3dce8dd7
+From: <sip:Sphericall@lab1025.net>;tag=5d196caa-4952-4231-84bda96af0f2ba03
+To: "Adam Red" <sip:7011@lab1025.net>;tag=317427275
+Call-ID: 8a2ac096-8245-4b25-9919ba3f0adcb475@10.25.11.10
+CSeq: 1 OPTIONS
+Allow:  INVITE, ACK, CANCEL, BYE, NOTIFY, REFER, OPTIONS, UPDATE
+Privacy: none
+Server: NECSDT900_ITK-32LCGS/5.2.0.0_6CE4DAF1EB29
+Content-Length: 0
+
+
+18:15:38.224, L3, 17e64, SIPmessageManager.611, handle_rx_msg, method=OPTIONS
+18:15:38.224, L3, 17e64, SIPmessageManager.611, handle request, method=OPTIONS, msg.get=udp, via.get=udp
+
