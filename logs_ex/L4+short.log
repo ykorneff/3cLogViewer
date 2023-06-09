@@ -46,5 +46,83 @@ Content-Length: 0
 
 
 18:15:38.224, L3, 17e64, SIPmessageManager.611, handle_rx_msg, method=OPTIONS
+09:18:16.605, L2, 1f8c, UDPtransceiver.670, -> udp::0,10.25.11.51:5060 tx sip=SIP/2.0 404 Not Found
 18:15:38.224, L3, 17e64, SIPmessageManager.611, handle request, method=OPTIONS, msg.get=udp, via.get=udp
+09:18:17.613, L2, 1f8c, UDPtransceiver.670, -> udp::0,10.25.11.51:5060 tx sip=SIP/2.0 480 Temporarily not available
+Via: SIP/2.0/UDP 10.25.11.10:5060;branch=z9hG4bK6800515c-f079-4035-b122c5e9a3ee798f
 
+From: <sip:Sphericall@lab1025.net>;tag=4204ff3e-5f14-4337-a184286149cf24b2
+
+To: "Eva Blue" <sip:7015@lab1025.net>;tag=84404374
+
+Call-ID: bf35bc28-0652-40c7-aeec57fe9fc0ad11@10.25.11.10
+
+CSeq: 15765 OPTIONS
+
+Allow:  INVITE, ACK, CANCEL, BYE, NOTIFY, REFER, OPTIONS, UPDATE
+
+Privacy: none
+
+Server: NECSDT900_ITK-32TCGS/5.3.4.1_6CE4DAF1F472
+
+Content-Length: 0
+09:19:36.460, L3, 165c, SIPstack.88, <-10.25.11.52:5060, rx_count=461 (461), rx sip=SIP/2.0 200 OK
+
+Via: SIP/2.0/UDP 10.25.11.10:5060;branch=z9hG4bK6800515c-f079-4035-b122c5e9a3ee798f
+
+From: <sip:Sphericall@lab1025.net>;tag=4204ff3e-5f14-4337-a184286149cf24b2
+
+To: "Eva Blue" <sip:7015@lab1025.net>;tag=84404374
+
+Call-ID: bf35bc28-0652-40c7-aeec57fe9fc0ad11@10.25.11.10
+
+CSeq: 15765 OPTIONS
+
+Allow:  INVITE, ACK, CANCEL, BYE, NOTIFY, REFER, OPTIONS, UPDATE
+
+Privacy: none
+
+Server: NECSDT900_ITK-32TCGS/5.3.4.1_6CE4DAF1F472
+
+Content-Length: 0
+
+
+
+
+09:19:36.460, L4, 165c, SIPDnsNaptrImpl.145258, dtor, remaining count=2877
+09:19:36.460, L4, 165c, OptionsClientTU.145257, dtor, remaining count=2876
+
+09:19:38.291, L4, 165c, ConfigThread.37, WatchedEventMsgThread timeout event, context=0
+09:19:38.733, L2, 165c, SIPstack.88, <-10.25.11.58:5060, rx_count=516 (516), rx sip=REGISTER sip:10.25.11.10 SIP/2.0
+
+Via: SIP/2.0/UDP 10.25.11.58:5060;branch=z9hG4bK3gzdo843pmv
+
+Max-Forwards: 70
+
+From: <sip:7032@10.25.11.10>;tag=e0wv3tz8y1
+
+To: <sip:7032@10.25.11.10>
+
+Call-ID: 8zznfy248w9n2
+
+CSeq: 121742 REGISTER
+
+Contact: <sip:7032@10.25.11.58;line=44653>
+
+Allow: INVITE, CANCEL, BYE, ACK, REGISTER, OPTIONS, REFER, SUBSCRIBE, NOTIFY, MESSAGE, INFO, PRACK, UPDATE
+
+Allow-Events: talk,hold
+
+Expires: 180
+
+User-Agent: IPDECT-V2/06.50.0001 (MAC=001827518379; SER= 00000; HW=5)
+
+Content-Length: 0
+
+
+
+
+09:19:38.733, L4, 165c, NonInviteServerTransaction.145260, ctor, count=2877
+09:19:38.733, L3, 165c, UserAgent.32, name match "IPDECT-V2" matches UserAgent "IPDECT-V2"
+09:19:38.733, L4, 165c, RegisterServerTU.3346, VerifyHardwareAddress
+09:19:38.733, L3, 165c, UserAgent.32, name match "IPDECT-V2" matches UserAgent "IPDECT-V2"
